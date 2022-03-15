@@ -54,15 +54,16 @@ public class PublisherController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    // check the users token through the UMS to verify that they have publishing rights
     @GetMapping("/verify/{email}/{token}")
     public ResponseEntity<User> checkUserToken(@PathVariable("email") String email, @PathVariable("token") String token) {
+        ResponseEntity<User> restTemplate;
         try {
-            ResponseEntity<User> restTemplate = new RestTemplate().getForEntity(
+            restTemplate = new RestTemplate().getForEntity(
                     "http://localhost:8081/users/" + email + "/" + token, User.class);
-            return restTemplate;
         } catch (HttpClientErrorException e) {
-            ResponseEntity<User> test = ResponseEntity.status(e.getRawStatusCode()).headers(e.getResponseHeaders()).body(null);
-            return test;
+            restTemplate = ResponseEntity.status(e.getRawStatusCode()).headers(e.getResponseHeaders()).body(null);
         }
+        return restTemplate;
     }
 }
