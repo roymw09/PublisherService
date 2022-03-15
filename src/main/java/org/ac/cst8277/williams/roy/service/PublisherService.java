@@ -30,6 +30,8 @@ public class PublisherService {
         return contentRepository.save(content);
     }
 
+    public Flux<Content> getAllContent() { return contentRepository.findAll(); }
+
     public Mono<Publisher> findPublisherById(Integer publisherId) {
         return publisherRepository.findById(publisherId);
     }
