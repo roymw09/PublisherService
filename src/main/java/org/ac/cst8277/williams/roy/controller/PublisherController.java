@@ -3,6 +3,7 @@ package org.ac.cst8277.williams.roy.controller;
 import org.ac.cst8277.williams.roy.model.Content;
 import org.ac.cst8277.williams.roy.model.Publisher;
 import org.ac.cst8277.williams.roy.model.User;
+import org.ac.cst8277.williams.roy.service.MessagePublishService;
 import org.ac.cst8277.williams.roy.service.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,10 @@ import reactor.core.publisher.Mono;
 public class PublisherController {
 
     @Autowired
-    PublisherService publisherService;
+    PublisherService publisherService; // publishers in this context refers to users with publishing rights
+
+    @Autowired
+    MessagePublishService messagePublishService; // this service is used to publish messages to the redis channel
 
     @PostMapping("/publisher/create")
     @ResponseStatus(HttpStatus.CREATED)
@@ -36,7 +40,14 @@ public class PublisherController {
     @PostMapping("/content/create")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Content> createContent(@RequestBody Content content) {
-        return publisherService.createContent(content);
+        Mono<Content> savedContent = publisherService.createContent(content); // saves the content in the db
+        savedContent.subscribe(cnt -> {
+            if (cnt.getId() != null && cnt.getId() > 0) {
+                System.out.println("SUCCESS");
+                messagePublishService.publish(cnt.getId()); // publish content to the redis 'messages' channel
+            }
+        });
+        return savedContent;
     }
 
     @GetMapping("/content/find/{publisherId}")
