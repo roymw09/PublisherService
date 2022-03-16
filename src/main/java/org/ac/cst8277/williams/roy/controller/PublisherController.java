@@ -41,13 +41,12 @@ public class PublisherController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Content> createContent(@RequestBody Content content) {
         Mono<Content> savedContent = publisherService.createContent(content); // saves the content in the db
-        savedContent.subscribe(cnt -> {
-            if (cnt.getId() != null && cnt.getId() > 0) {
-                System.out.println("SUCCESS");
-                messagePublishService.publish(cnt.getId()); // publish content to the redis 'messages' channel
+        return savedContent.map(message -> {
+            if (message.getId() != null && message.getId() > 0) {
+                messagePublishService.publish(message.getId()); // publish content to the redis 'messages' channel
             }
+            return message;
         });
-        return savedContent;
     }
 
     @GetMapping("/content/find/{publisherId}")
