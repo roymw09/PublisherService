@@ -15,7 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/pubService")
+@RequestMapping("/pub")
 public class PublisherController {
 
     @Autowired
@@ -24,13 +24,13 @@ public class PublisherController {
     @Autowired
     MessagePublishService messagePublishService; // this service is used to publish messages to the redis channel
 
-    @PostMapping("/publisher/create")
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Publisher> createPublisher(@RequestBody Publisher publisher) {
         return publisherService.createPublisher(publisher);
     }
 
-    @GetMapping("/publisher/{publisherId}")
+    @GetMapping("/{publisherId}")
     public Mono<ResponseEntity<Publisher>> findPublisherById(@PathVariable Integer publisherId) {
         Mono<Publisher> publisher = publisherService.findPublisherById(publisherId);
         return publisher.map(ResponseEntity::ok)
@@ -72,7 +72,7 @@ public class PublisherController {
         ResponseEntity<User> restTemplate;
         try {
             restTemplate = new RestTemplate().getForEntity(
-                    "http://localhost:8081/users/" + email + "/" + token, User.class);
+                    "http://usermanagement-service:8081/users/" + email + "/" + token, User.class);
         } catch (HttpClientErrorException e) {
             restTemplate = ResponseEntity.status(e.getRawStatusCode()).headers(e.getResponseHeaders()).body(null);
         }

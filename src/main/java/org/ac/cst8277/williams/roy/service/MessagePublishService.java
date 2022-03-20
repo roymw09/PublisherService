@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class MessagePublishService {
 
-    private String API_ENDPOINT = "http://localhost:8083/pubService/content/";
+    private String API_ENDPOINT = "http://localhost:8083/pub/content/";
     private WebClient webClient;
 
     @Autowired
