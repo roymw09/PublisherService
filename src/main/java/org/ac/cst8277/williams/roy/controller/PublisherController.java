@@ -5,6 +5,7 @@ import org.ac.cst8277.williams.roy.model.Publisher;
 import org.ac.cst8277.williams.roy.model.User;
 import org.ac.cst8277.williams.roy.service.MessagePublishService;
 import org.ac.cst8277.williams.roy.service.PublisherService;
+import org.ac.cst8277.williams.roy.service.TokenPublishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,21 @@ public class PublisherController {
     @Autowired
     MessagePublishService messagePublishService; // this service is used to publish messages to the redis channel
 
+    @Autowired
+    TokenPublishService tokenPublishService; // this service is used to publish publisher tokens to the redis channel
+
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Publisher> createPublisher(@RequestBody Publisher publisher) {
         publisher.setId(UUID.randomUUID().toString());
-        return publisherService.createPublisher(publisher);
+        Mono<Publisher> savedPublisher = publisherService.createPublisher(publisher);
+        return savedPublisher.mapNotNull(pub -> {
+            if (pub != null && pub.getUser_id()!= null) {
+                tokenPublishService.initWebClient(pub.getUser_id());
+                tokenPublishService.publish();
+            }
+            return pub;
+        });
     }
 
     @GetMapping("/{publisherId}")
@@ -43,10 +54,10 @@ public class PublisherController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Content> createContent(@RequestBody Content content) {
         Mono<Content> savedContent = publisherService.createContent(content); // saves the content in the db
-        return savedContent.map(message -> {
-            if (message.getId() != null && message.getId() > 0) {
-                messagePublishService.publish(message.getId()); // publish content to the redis 'messages' channel
-            }
+        return savedContent.mapNotNull(message -> {
+            if (message != null && message.getId() != null)
+            messagePublishService.initWebClient(message.getId());
+            messagePublishService.publish(); // publish content to the redis 'messages' channel
             return message;
         });
     }
@@ -79,5 +90,12 @@ public class PublisherController {
             restTemplate = ResponseEntity.status(e.getRawStatusCode()).headers(e.getResponseHeaders()).body(null);
         }
         return restTemplate;
+    }
+
+    @GetMapping("/getToken/{userId}")
+    public Mono<ResponseEntity<Publisher>> getPublisherToken(@PathVariable("userId") Integer userId) {
+        Mono<Publisher> token = publisherService.getPublisherToken(userId);
+        return token.map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }

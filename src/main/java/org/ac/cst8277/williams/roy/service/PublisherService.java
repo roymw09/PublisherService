@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -43,5 +42,9 @@ public class PublisherService {
 
     public Mono<Content> findContentById(Integer contentId) {
         return contentRepository.findById(contentId);
+    }
+
+    public Mono<Publisher> getPublisherToken(Integer userId) {
+        return publisherRepository.getPublisherToken(userId);
     }
 }
