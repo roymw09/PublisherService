@@ -13,6 +13,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/pub")
@@ -27,11 +28,12 @@ public class PublisherController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Publisher> createPublisher(@RequestBody Publisher publisher) {
+        publisher.setId(UUID.randomUUID().toString());
         return publisherService.createPublisher(publisher);
     }
 
     @GetMapping("/{publisherId}")
-    public Mono<ResponseEntity<Publisher>> findPublisherById(@PathVariable Integer publisherId) {
+    public Mono<ResponseEntity<Publisher>> findPublisherById(@PathVariable String publisherId) {
         Mono<Publisher> publisher = publisherService.findPublisherById(publisherId);
         return publisher.map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
@@ -50,7 +52,7 @@ public class PublisherController {
     }
 
     @GetMapping("/content/find/{publisherId}")
-    public Flux<Content> findContentByPublisherId(@PathVariable Integer publisherId) {
+    public Flux<Content> findContentByPublisherId(@PathVariable String publisherId) {
         return publisherService.findContentByPublisherId(publisherId);
     }
 
