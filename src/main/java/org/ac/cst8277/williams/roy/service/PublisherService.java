@@ -32,15 +32,19 @@ public class PublisherService {
 
     public Flux<Content> getAllContent() { return contentRepository.findAll(); }
 
-    public Mono<Publisher> findPublisherById(Integer publisherId) {
+    public Mono<Publisher> findPublisherById(String publisherId) {
         return publisherRepository.findById(publisherId);
     }
 
-    public Flux<Content> findContentByPublisherId(Integer publisherId) {
+    public Flux<Content> findContentByPublisherId(String publisherId) {
         return contentRepository.findContentByPublisherId(publisherId);
     }
 
     public Mono<Content> findContentById(Integer contentId) {
         return contentRepository.findById(contentId);
+    }
+
+    public Mono<Publisher> getPublisherToken(Integer userId) {
+        return publisherRepository.getPublisherToken(userId);
     }
 }

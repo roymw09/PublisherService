@@ -1,6 +1,7 @@
 package org.ac.cst8277.williams.roy;
 
 import org.ac.cst8277.williams.roy.model.Content;
+import org.ac.cst8277.williams.roy.model.Publisher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -28,9 +29,19 @@ public class PublishServiceApplication {
         RedisSerializationContext<String, Content> serializationContext = RedisSerializationContext.<String, Content>newSerializationContext(RedisSerializer.string())
                 .value(valueSerializer)
                 .build();
-        return new ReactiveRedisTemplate<String, Content>(lettuceConnectionFactory, serializationContext);
+        return new ReactiveRedisTemplate<>(lettuceConnectionFactory, serializationContext);
     }
 
+    @Bean
+    public ReactiveRedisOperations<String, Publisher> tokenTemplate(LettuceConnectionFactory lettuceConnectionFactory){
+        RedisSerializer<Publisher> valueSerializer = new Jackson2JsonRedisSerializer<>(Publisher.class);
+        RedisSerializationContext<String, Publisher> serializationContext = RedisSerializationContext.<String, Publisher>newSerializationContext(RedisSerializer.string())
+                .value(valueSerializer)
+                .build();
+        return new ReactiveRedisTemplate<>(lettuceConnectionFactory, serializationContext);
+    }
+
+    /*
     @Bean
     LettuceConnectionFactory lettuceConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
@@ -40,6 +51,6 @@ public class PublishServiceApplication {
         LettuceClientConfiguration.LettuceClientConfigurationBuilder lettuceClientConfigurationBuilder = LettuceClientConfiguration.builder();
 
         return new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfigurationBuilder.build());
-    }
+    }*/
 
 }
