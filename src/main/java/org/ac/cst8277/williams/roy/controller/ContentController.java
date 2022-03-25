@@ -11,7 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/content")
+@RequestMapping("/pub/content")
 public class ContentController {
 
     @Autowired
@@ -25,9 +25,10 @@ public class ContentController {
     public Mono<Content> createContent(@RequestBody Content content) {
         Mono<Content> savedContent = contentService.createContent(content); // saves the content in the db
         return savedContent.mapNotNull(message -> {
-            if (message != null && message.getId() != null)
+            if (message != null && message.getId() != null) {
                 redisMessagePublishService.initWebClient(message.getId());
-            redisMessagePublishService.publish(); // publish content to the redis 'messages' channel
+                redisMessagePublishService.publish(); // publish content to the redis 'messages' channel
+            }
             return message;
         });
     }

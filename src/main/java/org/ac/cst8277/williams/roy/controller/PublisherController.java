@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/pub")
+@RequestMapping("/pub/publisher")
 public class PublisherController {
 
     @Autowired
