@@ -1,18 +1,18 @@
 package org.ac.cst8277.williams.roy.service;
 
-import org.ac.cst8277.williams.roy.model.Content;
+import org.ac.cst8277.williams.roy.model.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-public class MessagePublishService implements RedisPublishService {
+public class RedisTokenPublishService implements RedisPublishService {
 
-    private String API_ENDPOINT = "http://localhost:8083/pub/content/";
+    private String API_ENDPOINT = "http://localhost:8083/pub/getToken/";
     private WebClient webClient;
     @Autowired
-    private ReactiveRedisOperations<String, Content> contentTemplate;
+    private ReactiveRedisOperations<String, Publisher> tokenTemplate;
 
     @Override
     public void initWebClient(Integer id) {
@@ -25,8 +25,8 @@ public class MessagePublishService implements RedisPublishService {
     public void publish() {
         this.webClient.get()
                 .retrieve()
-                .bodyToMono(Content.class)
-                .flatMap(content -> this.contentTemplate.convertAndSend("messages", content))
+                .bodyToMono(Publisher.class)
+                .flatMap(publisher -> this.tokenTemplate.convertAndSend("publisher_token", publisher))
                 .subscribe();
     }
 }
