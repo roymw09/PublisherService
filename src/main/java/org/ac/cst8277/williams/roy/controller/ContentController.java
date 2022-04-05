@@ -34,7 +34,7 @@ public class ContentController {
     }
 
     @GetMapping("/find/{publisherId}")
-    public Flux<Content> findContentByPublisherId(@PathVariable String publisherId) {
+    public Flux<Content> findContentByPublisherId(@PathVariable Integer publisherId) {
         return contentService.findContentByPublisherId(publisherId);
     }
 

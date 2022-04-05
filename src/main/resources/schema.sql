@@ -6,8 +6,8 @@ CREATE TABLE publisher (
 );
 CREATE TABLE content (
     id SERIAL,
-    publisher_id VARCHAR(250) NOT NULL,
+    publisher_id INT NOT NULL,
     content VARCHAR(500) NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (publisher_id) REFERENCES publisher(id)
+    FOREIGN KEY (publisher_id) REFERENCES publisher(user_id)
 );

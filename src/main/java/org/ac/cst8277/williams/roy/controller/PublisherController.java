@@ -1,17 +1,19 @@
 package org.ac.cst8277.williams.roy.controller;
 
+import org.ac.cst8277.williams.roy.model.JwtRequest;
+import org.ac.cst8277.williams.roy.model.JwtResponse;
 import org.ac.cst8277.williams.roy.model.Publisher;
 import org.ac.cst8277.williams.roy.model.User;
 import org.ac.cst8277.williams.roy.service.PublisherService;
 import org.ac.cst8277.williams.roy.service.RedisTokenPublishService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/pub/publisher")
@@ -25,16 +27,23 @@ public class PublisherController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Publisher> createPublisher(@RequestBody Publisher publisher) {
-        publisher.setId(UUID.randomUUID().toString());
-        Mono<Publisher> savedPublisher = publisherService.createPublisher(publisher);
-        return savedPublisher.mapNotNull(pub -> {
-            if (pub != null && pub.getUser_id()!= null) {
-                redisTokenPublishService.initWebClient(pub.getUser_id());
-                redisTokenPublishService.publish();
-            }
-            return pub;
-        });
+    public ResponseEntity<Publisher> createPublisher(@RequestBody Publisher publisher) {
+        Integer userId = publisher.getUser_id();
+        String username = new RestTemplate().getForObject("http://localhost:8081/users/user/getUsername/" + userId, String.class);
+        JwtRequest tokenRequest = new JwtRequest(username, "password");
+        tokenRequest.setUser_id(userId);
+        HttpEntity<JwtRequest> jwtRequestEntity = new HttpEntity<>(tokenRequest);
+        ResponseEntity<Publisher> responseEntity;
+        try {
+            ResponseEntity<JwtResponse> response = new RestTemplate().postForEntity(
+                    "http://localhost:8081/authenticate/publisher", jwtRequestEntity, JwtResponse.class);
+            publisher.setId(response.getBody().getToken());
+            publisherService.createPublisher(publisher).subscribe();
+            responseEntity = new ResponseEntity<>(publisher, response.getStatusCode());
+        } catch (HttpClientErrorException e) {
+            responseEntity = new ResponseEntity<>(null, e.getStatusCode());
+        }
+        return responseEntity;
     }
 
     @GetMapping("/{publisherId}")

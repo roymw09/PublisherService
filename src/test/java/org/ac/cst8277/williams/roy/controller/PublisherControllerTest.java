@@ -51,9 +51,9 @@ public class PublisherControllerTest {
     }
 
     private List<Content> getContentData() {
-        return Arrays.asList(new Content(null, UUID.randomUUID().toString(), "This is content!"),
-                new Content(null, UUID.randomUUID().toString(), "Test content"),
-                new Content(null, UUID.randomUUID().toString(), "More test content"));
+        return Arrays.asList(new Content(null, 1, "This is content!"),
+                new Content(null, 1, "Test content"),
+                new Content(null, 2, "More test content"));
     }
 
     @BeforeEach
@@ -126,7 +126,7 @@ public class PublisherControllerTest {
 
     @Test
     public void createContent() {
-        Content content = new Content(null, UUID.randomUUID().toString(), "Hello this is more content");
+        Content content = new Content(null, 3, "Hello this is more content");
         webTestClient.post().uri("/pubService/content/create").contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
                 .body(Mono.just(content), Content.class)
                 .exchange()

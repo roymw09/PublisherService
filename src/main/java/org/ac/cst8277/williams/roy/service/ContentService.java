@@ -23,7 +23,7 @@ public class ContentService {
 
     public Flux<Content> getAllContent() { return contentRepository.findAll(); }
 
-    public Flux<Content> findContentByPublisherId(String publisherId) {
+    public Flux<Content> findContentByPublisherId(Integer publisherId) {
         return contentRepository.findContentByPublisherId(publisherId);
     }
 
