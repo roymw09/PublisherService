@@ -41,6 +41,7 @@ public class PublishServiceApplication {
         return new ReactiveRedisTemplate<>(lettuceConnectionFactory, serializationContext);
     }
 
+    /*
     @Bean
     LettuceConnectionFactory lettuceConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
@@ -50,5 +51,5 @@ public class PublishServiceApplication {
         LettuceClientConfiguration.LettuceClientConfigurationBuilder lettuceClientConfigurationBuilder = LettuceClientConfiguration.builder();
 
         return new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfigurationBuilder.build());
-    }
+    }*/
 }
