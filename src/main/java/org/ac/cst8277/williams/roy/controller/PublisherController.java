@@ -29,17 +29,17 @@ public class PublisherController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Publisher> createPublisher(@RequestBody Publisher publisher) {
         Integer userId = publisher.getUser_id();
-        String username = new RestTemplate().getForObject("http://localhost:8081/users/user/getUsername/" + userId, String.class);
+        String username = new RestTemplate().getForObject("https://pubsub-gateway.herokuapp.com/users/user/getUsername/" + userId, String.class);
         JwtRequest tokenRequest = new JwtRequest(username, "password");
         tokenRequest.setUser_id(userId);
         HttpEntity<JwtRequest> jwtRequestEntity = new HttpEntity<>(tokenRequest);
         ResponseEntity<Publisher> responseEntity;
         try {
-            ResponseEntity<JwtResponse> response = new RestTemplate().postForEntity(
-                    "http://localhost:8081/authenticate/publisher", jwtRequestEntity, JwtResponse.class);
-            publisher.setId(response.getBody().getToken());
+            JwtResponse response = new RestTemplate().postForObject(
+                    "https://pubsub-gateway.herokuapp.com/authenticate/publisher", jwtRequestEntity, JwtResponse.class);
+            publisher.setId(response.getToken());
             publisherService.createPublisher(publisher).subscribe();
-            responseEntity = new ResponseEntity<>(publisher, response.getStatusCode());
+            responseEntity = new ResponseEntity<>(publisher, HttpStatus.CREATED);
         } catch (HttpClientErrorException e) {
             responseEntity = new ResponseEntity<>(null, e.getStatusCode());
         }
@@ -53,6 +53,7 @@ public class PublisherController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    // Todo - Delete this method as its not longer needed
     // check the users token through the UMS to verify that they have publishing rights
     @GetMapping("/verify/{email}/{token}")
     public ResponseEntity<User> checkUserToken(@PathVariable("email") String email, @PathVariable("token") String token) {

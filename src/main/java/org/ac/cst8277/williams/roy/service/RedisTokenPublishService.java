@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class RedisTokenPublishService implements RedisPublishService {
 
-    private String API_ENDPOINT = "http://localhost:8083/pub/publisher/getToken/";
+    private String API_ENDPOINT = "https://pubsub-gateway.herokuapp.com/pub/publisher/getToken/";
     private WebClient webClient;
     @Autowired
     private ReactiveRedisOperations<String, Publisher> tokenTemplate;

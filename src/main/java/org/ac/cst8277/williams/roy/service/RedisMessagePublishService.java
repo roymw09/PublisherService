@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class RedisMessagePublishService implements RedisPublishService {
 
-    private String API_ENDPOINT = "http://localhost:8083/pub/content/";
+    private String API_ENDPOINT = "https://pubsub-gateway.herokuapp.com/pub/content/";
     private WebClient webClient;
     @Autowired
     private ReactiveRedisOperations<String, Content> contentTemplate;

@@ -27,7 +27,7 @@ public class ContentController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
         HttpEntity<String> request = new HttpEntity<>(headers);
-        ResponseEntity<String> response = new RestTemplate().exchange("http://localhost:8081/authenticate/validate", HttpMethod.GET, request, String.class);
+        ResponseEntity<String> response = new RestTemplate().exchange("https://pubsub-gateway.herokuapp.com/authenticate/validate", HttpMethod.GET, request, String.class);
         // save & publish the content if users JWT is valid
         if (response.getStatusCode() == HttpStatus.OK) {
             Mono<Content> savedContent = contentService.createContent(content); // saves the content in the db
