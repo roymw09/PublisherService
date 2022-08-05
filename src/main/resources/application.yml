@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8083}
+  port: 8083
   forward-headers-strategy: framework
 spring:
   application:
@@ -7,26 +7,15 @@ spring:
   profiles:
     active: dev
 ---
-eureka:
-  instance:
-    hostname: api-pub-service.herokuapp.com
-    homePageUrl: https://${eureka.instance.hostName}/
-    home-page-url-path: https://${eureka.instance.hostName}
-    non-secure-port: 80
-    secure-port: 443
-  client:
-    serviceUrl:
-      defaultZone: http://disc-service.herokuapp.com/eureka/
-
 spring:
   profiles: dev
   r2dbc:
-    url: r2dbc:postgresql://ec2-3-229-252-6.compute-1.amazonaws.com:5432/d6igsnqa307t8a
-    username: deltwpubhzstoy
-    password: 3829c3b85b8036b06e307d42a14318085b3e1eb2c415cad4ff51d57376afe43b
-#logging:
-#  level:
-#    org.springframework.data.r2dbc: Debug
+    url: r2dbc:postgresql://localhost:5433/testpub
+    username: postgres
+    password: password
+logging:
+  level:
+    org.springframework.data.r2dbc: Debug
 ---
 spring:
   profiles: test
@@ -34,3 +23,9 @@ spring:
     url: r2dbc:h2:mem:///test?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     name: sa
     password:
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+  instance:
+    appname: ${spring.application.name}
