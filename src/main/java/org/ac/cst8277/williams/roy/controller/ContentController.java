@@ -23,15 +23,15 @@ public class ContentController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Content> createContent(@RequestBody Content content) {
+    public Mono<Content> createContent(@RequestBody Content content) {
         // save & publish the content
         Mono<Content> savedContent = contentService.createContent(content); // saves the content in the db
         savedContent.mapNotNull(message -> {
             redisMessagePublishService.initWebClient(message.getId());
             redisMessagePublishService.publish(); // publish content to the redis 'messages' channel
             return message;
-        }).subscribe();
-        return new ResponseEntity<>(content, HttpStatus.CREATED);
+        });
+        return savedContent;
     }
 
     @GetMapping("/find/{publisherId}")
@@ -40,10 +40,8 @@ public class ContentController {
     }
 
     @GetMapping("/{contentId}")
-    public Mono<ResponseEntity<Content>> findContentById(@PathVariable Integer contentId) {
-        Mono<Content> content = contentService.findContentById(contentId);
-        return content.map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public Mono<Content> findContentById(@PathVariable Integer contentId) {
+        return contentService.findContentById(contentId);
     }
 
     @GetMapping("/findAll")
