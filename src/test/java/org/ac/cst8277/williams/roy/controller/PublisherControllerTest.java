@@ -115,24 +115,22 @@ public class PublisherControllerTest {
     @Test
     public void createPublisher() {
         Publisher publisher =  new Publisher(null, 5);
-        webTestClient.post().uri("/pubService/publisher/create").contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+        webTestClient.post().uri("/pub/publisher/create").contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
                 .body(Mono.just(publisher), Publisher.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.id").isNotEmpty()
                 .jsonPath("$.user_id").isEqualTo("5");
     }
 
     @Test
     public void createContent() {
-        Content content = new Content(null, 3, "Hello this is more content");
-        webTestClient.post().uri("/pubService/content/create").contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+        Content content = new Content(null, 1, "Hello this is more content");
+        webTestClient.post().uri("/pub/content/create").contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
                 .body(Mono.just(content), Content.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.id").isNotEmpty()
                 .jsonPath("$.publisher_id").isEqualTo("1")
                 .jsonPath("$.content").isEqualTo("Hello this is more content");
     }
