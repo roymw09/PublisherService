@@ -15,11 +15,14 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/pub/content")
 public class ContentController {
 
-    @Autowired
-    private ContentService contentService;
+    private final ContentService contentService;
 
-    @Autowired
-    private RedisMessagePublishService redisMessagePublishService; // this service is used to publish messages to the redis channel
+    private final RedisMessagePublishService redisMessagePublishService; // this service is used to publish messages to the redis channel
+
+    public ContentController(ContentService contentService, RedisMessagePublishService redisMessagePublishService) {
+        this.contentService = contentService;
+        this.redisMessagePublishService = redisMessagePublishService;
+    }
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
