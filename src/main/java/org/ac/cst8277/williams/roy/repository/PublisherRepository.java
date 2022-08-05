@@ -7,6 +7,4 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 
 public interface PublisherRepository extends ReactiveCrudRepository<Publisher, String> {
-    @Query("select * from publisher where user_id = :userId")
-    Mono<Publisher> getPublisherToken(@Param("userId") Integer userId);
 }

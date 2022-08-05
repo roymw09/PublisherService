@@ -23,8 +23,4 @@ public class PublisherService {
     public Mono<Publisher> findPublisherById(String publisherId) {
         return publisherRepository.findById(publisherId);
     }
-
-    public Mono<Publisher> getPublisherToken(Integer userId) {
-        return publisherRepository.getPublisherToken(userId);
-    }
 }
