@@ -16,8 +16,11 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/pub/publisher")
 public class PublisherController {
 
-    @Autowired
-    private PublisherService publisherService;
+    private final PublisherService publisherService;
+
+    public PublisherController(PublisherService publisherService) {
+        this.publisherService = publisherService;
+    }
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
