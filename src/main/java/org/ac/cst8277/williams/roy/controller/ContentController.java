@@ -21,24 +21,17 @@ public class ContentController {
     @Autowired
     private RedisMessagePublishService redisMessagePublishService; // this service is used to publish messages to the redis channel
 
-    @PostMapping("/create/{token}")
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Content> createContent(@PathVariable("token") String token, @RequestBody Content content) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + token);
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        ResponseEntity<String> response = new RestTemplate().exchange("https://pubsub-gateway.herokuapp.com/authenticate/validate", HttpMethod.GET, request, String.class);
-        // save & publish the content if users JWT is valid
-        if (response.getStatusCode() == HttpStatus.OK) {
-            Mono<Content> savedContent = contentService.createContent(content); // saves the content in the db
-            savedContent.mapNotNull(message -> {
-                redisMessagePublishService.initWebClient(message.getId());
-                redisMessagePublishService.publish(); // publish content to the redis 'messages' channel
-               return message;
-            }).subscribe();
-            return new ResponseEntity<>(content, response.getStatusCode());
-        }
-        return new ResponseEntity<>(null, response.getStatusCode());
+    public ResponseEntity<Content> createContent(@RequestBody Content content) {
+        // save & publish the content
+        Mono<Content> savedContent = contentService.createContent(content); // saves the content in the db
+        savedContent.mapNotNull(message -> {
+            redisMessagePublishService.initWebClient(message.getId());
+            redisMessagePublishService.publish(); // publish content to the redis 'messages' channel
+            return message;
+        }).subscribe();
+        return new ResponseEntity<>(content, HttpStatus.CREATED);
     }
 
     @GetMapping("/find/{publisherId}")
