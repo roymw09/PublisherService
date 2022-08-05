@@ -5,12 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Table;
 
+import javax.persistence.Id;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table("publisher")
 public class Publisher {
 
-    private String id;
+    @Id
+    private Integer id;
     private Integer user_id;
 }
