@@ -32,15 +32,6 @@ public class PublishServiceApplication {
         return new ReactiveRedisTemplate<>(lettuceConnectionFactory, serializationContext);
     }
 
-    @Bean
-    public ReactiveRedisOperations<String, Publisher> tokenTemplate(LettuceConnectionFactory lettuceConnectionFactory){
-        RedisSerializer<Publisher> valueSerializer = new Jackson2JsonRedisSerializer<>(Publisher.class);
-        RedisSerializationContext<String, Publisher> serializationContext = RedisSerializationContext.<String, Publisher>newSerializationContext(RedisSerializer.string())
-                .value(valueSerializer)
-                .build();
-        return new ReactiveRedisTemplate<>(lettuceConnectionFactory, serializationContext);
-    }
-
     /*
     @Bean
     LettuceConnectionFactory lettuceConnectionFactory() {

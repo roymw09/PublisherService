@@ -9,12 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 @Service
-@Slf4j
 @Transactional
 public class PublisherService {
 
-    @Autowired
-    private PublisherRepository publisherRepository;
+    private final PublisherRepository publisherRepository;
+
+    public PublisherService(PublisherRepository publisherRepository) {
+        this.publisherRepository = publisherRepository;
+    }
 
     public Mono<Publisher> createPublisher(Publisher publisher) {
         return publisherRepository.save(publisher);

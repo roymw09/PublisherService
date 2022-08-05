@@ -11,8 +11,11 @@ public class RedisMessagePublishService implements RedisPublishService {
 
     private final String API_ENDPOINT = "http://localhost:8080/pub/content/";
     private WebClient webClient;
-    @Autowired
-    private ReactiveRedisOperations<String, Content> contentTemplate;
+    private final ReactiveRedisOperations<String, Content> contentTemplate;
+
+    public RedisMessagePublishService(ReactiveRedisOperations<String, Content> contentTemplate) {
+        this.contentTemplate = contentTemplate;
+    }
 
     @Override
     public void initWebClient(Integer id) {
